@@ -8,7 +8,7 @@ from backend.db.openai_client import generate_code_variations
 chroma_client = chromadb.PersistentClient(path="./chroma_db")
 
 # Create (or load) a collection named "code_samples"
-code_collection = chroma_client.get_or_create_collection(name="code_samples")
+code_collection = chroma_client.get_or_create_collection(name="code_samples", metadata={"hnsw:space": "cosine"}, embedding_function=None)
 
 def add_code_sample(id: str, code: str, embedding: list[float]):
     """
@@ -59,9 +59,9 @@ def add_code_sample(id: str, code: str, add_variations: bool = True):
 
     # Generate embeddings for all snippets
     embeddings = [
-        openai.Embedding.create(input=snippet, model="text-embedding-ada-002")["data"][0]["embedding"]
+        openai.embeddings.create(model="text-embedding-ada-002", input=snippet).data[0].embedding
         for snippet in all_snippets
-    ]
+    ] 
 
     # Store all versions in ChromaDB
     for i, snippet in enumerate(all_snippets):
