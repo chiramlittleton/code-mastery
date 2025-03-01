@@ -1,7 +1,7 @@
 # Code Mastery
 
 ## Overview
-Code Mastery is an **AI-powered coding proficiency platform** that provides **interactive learning**, **adaptive problem-solving**, and **skill tracking** using **FastAPI, React, and ChromaDB**. It helps developers enhance their coding skills by offering **AI-generated challenges**, **real-time feedback**, and **personalized recommendations**.
+Code Mastery is an **AI-powered coding proficiency platform** that provides **interactive learning**, **adaptive problem-solving**, and **skill tracking** using **FastAPI, Vue, and ChromaDB**. It helps developers enhance their coding skills by offering **AI-generated challenges**, **real-time feedback**, and **personalized recommendations**.
 
 ## **Architecture**
 Code Mastery is designed as a **microservices-based architecture**, ensuring **scalability, modularity, and performance**. The system consists of multiple components that handle **problem generation, user submissions, AI-powered feedback, and data persistence**.
@@ -9,7 +9,7 @@ Code Mastery is designed as a **microservices-based architecture**, ensuring **s
 ### **Architecture Diagram**
 ```mermaid
 graph TD;
-    A[Frontend (React)] -->|Requests| B[Backend API (FastAPI)];
+    A[Frontend (Vue)] -->|Requests| B[Backend API (FastAPI)];
     B -->|Fetches Problems| C[Question Generator (AI)];
     B -->|Stores User Data| D[PostgreSQL (User DB)];
     B -->|Embeddings Search| E[ChromaDB (Vector Storage)];
@@ -17,8 +17,8 @@ graph TD;
 ```
 
 ### **Components**
-#### **1️⃣ Frontend (React + TypeScript)**
-- Built using **React and TypeScript** for an interactive UI.
+#### **1️⃣ Frontend (Vue + Vite + Axios)**
+- Built using **Vue, Vite, and Axios** for an interactive UI.
 - Communicates with the backend via **REST API & WebSockets**.
 - Provides **real-time problem-solving and skill tracking**.
 

@@ -1,59 +1,38 @@
-from fastapi import FastAPI, HTTPException
-from backend.openai_config import configure_openai 
-from pydantic import BaseModel
-from backend.db.chroma import add_code_sample, search_code_sample
-from backend.db.openai_client import generate_code_variations
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+import os
 
+from backend.api.questions import router as questions_router
+from backend.api.submissions import router as submissions_router
+from backend.openai_config import configure_openai
+
+# Load API key
 configure_openai()
 
+# Environment Variables
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@postgres:5432/codemastery")
+VECTOR_DB_URL = os.getenv("VECTOR_DB_URL", "http://chromadb:8000")
+
+# Initialize FastAPI app
 app = FastAPI()
 
-class CodeSnippet(BaseModel):
-    id: str
-    code: str
-    add_variations: bool = True
+# ✅ Add CORS middleware to allow frontend requests
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # Vue frontend
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*"],  # Allow all headers
+)
 
-class SearchRequest(BaseModel):
-    query_embedding: list[float]
-    top_k: int = 3
+# Include API routers
+app.include_router(questions_router, prefix="/questions")
+app.include_router(submissions_router, prefix="/submissions")
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to the Code Mastery API!"}
-
-@app.post("/add-code/")
-def add_code(request: CodeSnippet):
-    """
-    API endpoint to add a code snippet to ChromaDB.
-
-    Request Body:
-        - id (str): Unique identifier for the snippet.
-        - code (str): The actual code snippet.
-        - add_variations (bool): Whether AI-generated variations should be stored.
-
-    Returns:
-        dict: Confirmation message.
-    """
-    try:
-        response = add_code_sample(request.id, request.code, request.add_variations)
-        return response
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/search-code/")
-def search_code(request: SearchRequest):
-    """
-    API endpoint to search for similar code snippets.
-
-    Request Body:
-        - query_embedding (list[float]): The embedding vector to search.
-        - top_k (int): Number of closest matches to return.
-
-    Returns:
-        dict: Search results from ChromaDB.
-    """
-    try:
-        results = search_code_sample(request.query_embedding, request.top_k)
-        return results
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return {
+        "message": "Welcome to the Adaptive Learning API!",
+        "database_url": DATABASE_URL,
+        "vector_db_url": VECTOR_DB_URL
+    }
